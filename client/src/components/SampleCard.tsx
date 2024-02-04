@@ -10,28 +10,31 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
+import { articlePath, imagePath } from "../http/operations";
 import { formatDate } from "../utils/commom";
 import { TopicTag } from "./TopicTag";
 
+
 interface Props {
+  id: string;
   title: string;
   description: string;
   readTime: number;
   createdAt: string;
-  tag?: {
-    name: string;
-    color: string;
-  };
+  tag: string;
 }
 
 export function SampleCard({
+  id,
   title,
   description,
   readTime,
   createdAt,
   tag,
 }: Props) {
-  const date = formatDate(new Date());
+  const navigate = useNavigate();
+  const date = formatDate(new Date(createdAt));
   const color = (n: number): string => {
     switch (n) {
       case 1:
@@ -40,8 +43,6 @@ export function SampleCard({
         return "cyan";
       case 3:
         return "pink";
-      case 4:
-        return "linkedin";
       case 5:
         return "gray";
       default:
@@ -55,6 +56,7 @@ export function SampleCard({
     <>
       <Card
         cursor={"pointer"}
+        onClick={() => navigate(articlePath(id))}
         boxShadow={"base"}
         minW="220px"
         maxW={"330px"}
@@ -71,7 +73,7 @@ export function SampleCard({
             display={{ base: "none", sm: "none", md: "none", lg: "block" }}
           >
             <Image
-              src="https://th.bing.com/th/id/OIG.wP.0xTjqyTThzWawHxaL?pid=ImgGn"
+              src={imagePath(id)}
               alt="Green double couch with wooden legs"
               loading="lazy"
             />
@@ -102,7 +104,7 @@ export function SampleCard({
               alignItems={{ base: "baseline", md: "center", lg: "baseline" }}
             >
               <TopicTag
-                title="Política"
+                title={tag}
                 color={color(Math.floor(Math.random() * (5 - 0 + 1) + 0))}
                 variant="solid"
                 borderRadius="full"
