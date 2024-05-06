@@ -1,6 +1,7 @@
 package com.server.taxco.application.web.controller
 
 import com.server.taxco.application.web.request.CreateArticleRequest
+import com.server.taxco.application.web.response.ArticlePageResponse
 import com.server.taxco.application.web.response.ArticleResponse
 import com.server.taxco.common.LoggableClass
 import com.server.taxco.domain.service.FetchArticleService
@@ -53,9 +54,14 @@ class ArticleController(
     @GetMapping
     fun getArticleById(
         @RequestParam("page") page: Int,
-        @RequestParam("size") size: Int,
-    ): ResponseEntity<Page<ArticleDocument>> {
+        @RequestParam("size", required = false) size: Int = 3,
+    ): ResponseEntity<ArticlePageResponse> {
         val response = fetchArticle.byPage(page, size)
+
+        if (response.articles.isEmpty()) {
+            return ResponseEntity.noContent().build()
+        }
+
         return ResponseEntity.ok(response)
     }
 
@@ -116,6 +122,7 @@ class ArticleController(
         createArticle.updateContent(articleId, file)
         return ResponseEntity(HttpStatus.CREATED)
     }
+
     @PutMapping(
         value = ["{articleId}/image"],
         consumes = [MediaType.MULTIPART_FORM_DATA_VALUE]
